@@ -1,0 +1,21 @@
+[project]
+name = "papers-agent"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "langgraph>=0.3.0",
+    "langchain>=0.3.0",
+    "langchain-core>=0.3.0",
+    "langchain-text-splitters>=0.3.0",
+    "langchain-gigachat>=0.3.0",
+    "gigachat>=0.1.40",
+    "chromadb>=0.5.0",
+    "pymupdf>=1.24.0",
+    "python-dotenv>=1.0.0",
+    "loguru>=0.7.0",
+]
+
+[tool.uv]
+override-dependencies = [
+  "onnxruntime==1.20.1",
+]
