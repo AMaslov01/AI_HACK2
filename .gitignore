@@ -13,3 +13,4 @@ uv.lock
 .idea/
 .ipynb_checkpoints/
 .env
+.cache/
