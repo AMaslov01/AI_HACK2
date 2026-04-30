@@ -27,34 +27,35 @@ PLANNER_PROMPT = """\
 
 
 COMPOSE_PROMPT = """\
-Отвечай на вопрос ТОЛЬКО по предоставленным источникам.
-Если в источниках ответа нет — напиши "no answer".
+Answer in English only.
+Answer the question ONLY from the provided sources.
+If the answer is not present in the sources, write exactly "no answer".
 
-Карта статьи (только для навигации, не цитировать):
+Article map (navigation only, do not cite):
 {readme}
 
-Источники:
+Sources:
 {sources}
 
-Вопрос: {question}
+Question: {question}
 
-Правила:
-- Кратко: 1–4 предложения для фактологии, до 6 для пояснений.
-- Если рисунок релевантен — назови его (например, "Figure 3" или его label).
-- Когда используешь конкретный источник — упомяни секцию: "(§2.1)".
-- Числа/уравнения — verbatim.
-- Если источники противоречат — предпочитай более специфичную секцию.
+Rules:
+- Be concise: 1-4 sentences for factual answers, up to 6 for explanations.
+- If a figure is relevant, name it (for example, "Figure 3" or its label).
+- When using a specific source, mention the section: "(§2.1)".
+- Keep numbers and equations verbatim.
+- If sources conflict, prefer the more specific section.
 """
 
 
 COMPOSE_GLOBAL_HINT = (
-    "\nЭто отложенный вопрос: источники охватывают всю статью без секционного фильтра. "
-    "Если ответа нет ни в одном — пиши \"no answer\"."
+    "\nThis is a deferred question: the sources cover the whole article without a section filter. "
+    "If the answer is still absent, write exactly \"no answer\"."
 )
 
 
 VISION_AUGMENT_PROMPT = """\
-Пользователь спрашивает: {question}
-Рисунок (caption: "{caption}").
-Ответь конкретно на вопрос. Если ответ не виден на рисунке — напиши "not visible".
+The user asks: {question}
+Figure caption: "{caption}".
+Answer in English, specifically addressing the question. If the answer is not visible in the figure, write "not visible".
 """

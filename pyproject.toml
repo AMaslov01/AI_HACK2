@@ -1,7 +1,7 @@
 [project]
 name = "papers-agent"
 version = "0.1.0"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<=3.13"
 dependencies = [
     "langgraph>=0.3.0",
     "langchain>=0.3.0",
