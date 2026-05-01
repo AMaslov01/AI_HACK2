@@ -1,31 +1,31 @@
-# Задание: агент для анализа научной литературы
+# Task: AI Agent for Scientific Literature Analysis
 
-Нужно реализовать **ИИ-агента** на базе [GigaChat-2-Max](https://developers.sber.ru/docs/ru/gigachat/models/gigachat-2-max), который по материалам научной статьи (текст LaTeX, PDF, иллюстрации) отвечает на вопросы по статье, в том числе вопросы, где требуется понимание **рисунков и схем**.
+You need to implement an **AI agent** powered by [GigaChat-2-Max](https://developers.sber.ru/docs/ru/gigachat/models/gigachat-2-max) that, given the materials of a scientific paper (LaTeX source, PDF, illustrations), answers questions about the paper — including questions that require **understanding figures and diagrams**.
 
 ---
 
-## 1. Данные
+## 1. Data
 
-### 1.1. Формат
+### 1.1. Format
 
-- **Статья**: папка с **исходниками LaTeX** (`TeX source`) **и** **PDF-версия** статьи.
-- **PDF** приведён для тех, кто предпочтет использовать его в своем решении и для разработки; при скоринге решения в `data/` будут **и** TeX source, **и** PDF.
-- Папка с исходниками может содержать:
-  - один или несколько `*.tex` с основным текстом и / или секциями;
-  - вспомогательные `.cls`, `.sty`, `.bst`, `.bib` и т.д.;
-  - рисунки: `png`, `jpg`, `pdf` (все pdf из папки  `TeX source` **одностраничные** картинки);
-  - вложенные **подпапки** с **произвольными** именами.
+- **Paper**: a folder containing **LaTeX source files** (`TeX source`) **and** a **PDF version** of the paper.
+- The **PDF** is provided for participants who prefer to use it in their solution and for development purposes; during scoring, the `data/` folder will contain **both** the TeX source and the PDF.
+- The source folder may contain:
+  - one or more `*.tex` files with the main text and/or sections;
+  - auxiliary files: `.cls`, `.sty`, `.bst`, `.bib`, etc.;
+  - images: `png`, `jpg`, `pdf` (all PDF files inside the `TeX source` folder are **single-page** images);
+  - nested **subfolders** with **arbitrary** names.
 
-### 1.2. Ограничения (важно для дизайна)
+### 1.2. Constraints (important for design)
 
-- **Структура** папки **не** фиксирована: у одной статьи может быть один `*.tex`, у другой — много файлов и подпапок;
-- **Полный текст** статьи **длиннее** контекстного окна модели;
-- **Парсинг/разбор LaTeX** для нарезки и подготовки текста: используйте **`langchain_text_splitters`**;
+- The folder **structure** is **not** fixed: one paper may have a single `*.tex` file, another may have many files and subfolders;
+- The **full text** of the paper is **longer** than the model's context window;
+- For **parsing/processing LaTeX** to split and prepare the text, use **`langchain_text_splitters`**;
 
-### 1.3. Примеры содержимого папки `TeX source`
+### 1.3. Example `TeX source` Folder Contents
 
 <details>
-<summary>Пример 1 (много файлов в корне + рисунки)</summary>
+<summary>Example 1 (many files in root + images)</summary>
 
 ```text
 .
@@ -43,7 +43,7 @@
 </details>
 
 <details>
-<summary>Пример 2 (подпапка figures, несколько .tex)</summary>
+<summary>Example 2 (figures subfolder, multiple .tex files)</summary>
 
 ```text
 .
@@ -60,7 +60,7 @@
 </details>
 
 <details>
-<summary>Пример 3 (почти один главный .tex)</summary>
+<summary>Example 3 (nearly a single main .tex)</summary>
 
 ```text
 .
@@ -73,70 +73,69 @@
 
 </details>
 
-### 1.4. Примеры для отладки
+### 1.4. Debug Examples
 
-- Вам предоставлены статьи для разработки и отладки вашего агента:
-  1. [Статья #1](https://disk.yandex.ru/d/YiZBjU8xVxg88w)
-  2. [Статья #2](https://disk.yandex.ru/d/mS1__DMT4D2yng)
-- Вы можете использовать любые другие статьи, если это поможет сделать агента более устойчивым к различным форматам и доменам;
+- You are provided with papers for developing and debugging your agent:
+  1. [Paper #1](https://disk.yandex.ru/d/YiZBjU8xVxg88w)
+  2. [Paper #2](https://disk.yandex.ru/d/mS1__DMT4D2yng)
+- You may use any other papers if they help make the agent more robust across different formats and domains.
 
 ---
 
-## 2. Вход и выход
+## 2. Input and Output
 
 | | |
 |---|---|
-| **Вход** | Материалы статьи в `data/`: PDF статьи, **подпапка(и)** `TeX source`, и файл **`data/questions.txt`** — пронумерованный список вопросов. |
-| **Выход** | Файл **`output/answers.txt`** — **пронумерованные** ответы **в том же порядке**, что и вопросы. |
+| **Input** | Paper materials in `data/`: the paper PDF, **subfolder(s)** `TeX source`, and the file **`data/questions.txt`** — a numbered list of questions. |
+| **Output** | The file **`output/answers.txt`** — **numbered** answers **in the same order** as the questions. |
 
-**Важно**:
+**Important:**
 
-1. Формат заполнения файла answers.txt фиксирован (см. примеры в прилагаемых статьях): например, ответ на вопрос номер 3 должен начинаться строкой "## Answer 3". За ней идет сам ответ;
+1. The format of `answers.txt` is fixed (see examples in the provided papers): for example, the answer to question 3 must begin with the line `## Answer 3`, followed by the answer text;
 
-2. Вероятно, имеет смысл ограничивать агента по времени, которое тратится на один вопрос;
+2. It is likely worth imposing a time limit on how long the agent spends on each question;
 
-3. Если агент пропускает какой-либо вопрос, он все-равно должен вписать строку "## Answer ..." в файл answers.txt, а в теле ответа написать, например, "no answer".
-
-
----
-
-## 3. Требования к агенту
-
-- Отвечает на **все** вопросы по содержанию статьи, **включая** вопросы, требующие **анализа картинок/схем**;
-- **Запуск**: одна команда из корня репозитория: `python run.py`;
-- **Модель**: **только GigaChat-2-Max**;
-- **Режим проверки**: агент работает **автономно**, в **закрытой** среде, **без** взаимодействия с участником во время прогона;
-- **Конфиденциальность и этика соревнования:** **нельзя** передавать **любое** содержимое статьи, вопросов или ответов **вовне** (внешние API, публичные чаты, произвольные исходящие запросы с исходниками задачи). Нарушение - **дисквалификация**.
+3. If the agent skips any question, it must still write the line `## Answer ...` into `answers.txt`, with the answer body containing, for example, `no answer`.
 
 ---
 
-## 4. Разрешённые библиотеки
+## 3. Agent Requirements
 
- Библиотеки для виртуального окружения представлены в `pyproject.toml`.
+- Must answer **all** questions about the paper's content, **including** questions that require **analysis of images/diagrams**;
+- **Launch**: a single command from the repository root: `python run.py`;
+- **Model**: **GigaChat-2-Max only**;
+- **Evaluation mode**: the agent operates **autonomously**, in a **closed** environment, **without** participant interaction during the run;
+- **Confidentiality and competition ethics**: it is **forbidden** to transmit **any** content from the paper, questions, or answers **outside** the environment (external APIs, public chats, arbitrary outgoing requests with task source materials). Violation leads to **disqualification**.
 
 ---
 
-## 5. Окружение и настройка
+## 4. Permitted Libraries
+
+Libraries for the virtual environment are listed in `pyproject.toml`.
+
+---
+
+## 5. Environment Setup
 
 ```bash
 uv venv
 uv sync
 ```
 
-В `.env` нужно указать только два параметра:
-  
-  ```bash
-  GIGACHAT_CREDENTIALS='<Токен, полученный от организаторов>'
-  GIGACHAT_SCOPE='GIGACHAT_API_CORP'
-  ```
-  
-  `.env` в обязательном порядке должен быть в передаваемом zip-архиве
+Only two parameters need to be specified in `.env`:
+
+```bash
+GIGACHAT_CREDENTIALS='<Token provided by the organizers>'
+GIGACHAT_SCOPE='GIGACHAT_API_CORP'
+```
+
+`.env` **must** be included in the submitted zip archive.
 
 ---
 
-## 6. Самопроверка (локально)
+## 6. Self-Check (Locally)
 
-После `python run.py` запустите `src/utils/check_submission.py`. Скрипт проверяет наличие `.env`, наличие `output/answers.txt`, а также, что количество ответов совпадает с количеством вопросов.
+After running `python run.py`, execute `src/utils/check_submission.py`. The script checks for the presence of `.env`, the presence of `output/answers.txt`, and that the number of answers matches the number of questions.
 
 ```bash
 python run.py
@@ -145,16 +144,16 @@ python src/utils/check_submission.py
 
 ---
 
-## 7. Отправка задания
+## 7. Submission
 
-Вы сдаете **zip-архив с кодом**, который будет запущен на [платформе проверки решений](http://risk-hackathon.ru).
+You submit a **zip archive with code** that will be run on the [evaluation platform](http://risk-hackathon.ru).
 
-Ваш код должен:
-- запускаться в чистом окружении;
-- самостоятельно читать данные из папки `data/`;
-- сохранять результат в папку `output/`;
-- Максимальное время работы агента **15 минут** на статью.
+Your code must:
+- run in a clean environment;
+- read data independently from the `data/` folder;
+- save results to the `output/` folder;
+- Maximum agent runtime: **15 minutes per paper**.
 
-Лимит сабмитов распространяется только на успешные попытки (количество успешных попыток = 1). 
+The submission limit applies only to successful attempts (number of successful attempts = 1).
 
-На платформе будет проверятся факт получения ответов, качество ответов будет проверяться отдельно, вне платформы.
+The platform will verify that answers were produced; answer quality will be evaluated separately, outside the platform.
