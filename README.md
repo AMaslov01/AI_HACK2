@@ -5,7 +5,7 @@ You need to implement an **AI agent** powered by [GigaChat-2-Max](https://develo
 ---
 
 ## 1. Data
-
+ 
 ### 1.1. Format
 
 - **Paper**: a folder containing **LaTeX source files** (`TeX source`) **and** a **PDF version** of the paper.
